@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 import math
 import numpy as np
 from functools import reduce
@@ -36,36 +30,25 @@ import spint
 from spint.gravity import Gravity, Production, Attraction, Doubly
 
 
-# In[3]:
-
 
 def dist(x1, x2, y1, y2):
     a = np.sqrt((x1-x2)**2 + (y1-y2)**2)
     return a
 def sq_cauchy(d,b):
     return (1 + (d**2/b**2))**(-2)
-def SRMSE(actual, fitted, nm): 
+def SRMSE(actual, fitted, nm):
     return ((math.sqrt(sum(abs(actual - fitted))))/nm)/actual.mean()
-def pseudoR(llfull, llnull): 
+def pseudoR(llfull, llnull):
     return (1-(llfull/llnull))
-def ad_pseudoR(llfull, llnull, k): 
+def ad_pseudoR(llfull, llnull, k):
     return (1-((llfull - k)/llnull))
 
 
 # # Read Data (lockdown phase)
-
-# In[4]:
-
-
 OD = pd.read_csv(r'D:\SI model\data\126455_Franklin_County_mar15_April30_2020\126455_Franklin_County_mar15_April30_2020_od_all.csv')
 trav = pd.read_csv(r'D:\SI model\data\126455_Franklin_County_mar15_April30_2020\126455_Franklin_County_mar15_April30_2020_od_traveler_all.csv')
 
-
 # # Process OD and travelers info
-
-# In[5]:
-
-
 OD = OD[OD['Day Type'] == "0: All Days (M-Su)"]
 OD = OD[OD['Day Part'] == "0: All Day (12am-12am)"]
 OD = OD[['Origin Zone ID','Destination Zone ID','Average Daily O-D Traffic (StL Volume)',
@@ -84,9 +67,9 @@ trav['inc<20k'] = trav['Income Less than 20K (percent)']
 trav['inc20-50k'] = trav['Income 20K to 35K (percent)'] + trav['Income 35K to 50K (percent)']
 trav['inc50-100k'] = trav['Income 50K to 75K (percent)'] + trav['Income 75K to 100K (percent)']
 trav['inc>100k'] = 1 - trav['inc<20k'] - trav['inc20-50k'] - trav['inc50-100k']
-trav['pct_hbw'] = trav['Purpose HBW (percent)'] 
-trav['pct_hbo'] = trav['Purpose HBO (percent)'] 
-trav['pct_nhb'] = trav['Purpose NHB (percent)'] 
+trav['pct_hbw'] = trav['Purpose HBW (percent)']
+trav['pct_hbo'] = trav['Purpose HBO (percent)']
+trav['pct_nhb'] = trav['Purpose NHB (percent)']
 trav['white'] = trav['White (percent)']
 trav['non-white'] = 1 - trav['White (percent)']
 
@@ -144,16 +127,16 @@ T1 = final_T.reset_index()
 # In[12]:
 
 
-from itertools import product 
+from itertools import product
 ID = list(T1['Origin'])
-        
+
 OD_comb = list(product(ID, repeat = 2))
 
 
 # In[13]:
 
 
-df = pd.DataFrame() 
+df = pd.DataFrame()
 df['Origin'] = [OD_comb[i][0] for i in range(len(OD_comb))]
 df['Destination'] = [OD_comb[i][1] for i in range(len(OD_comb))]
 df['Flow'] = [int(T[i][j]) for i in range(len(T)) for j in range(len(T))]
@@ -179,7 +162,7 @@ df3 = pd.merge(df2, franklin_bg, left_on = 'Destination', right_on = 'id').renam
 df3.columns
 
 data = df3[['Origin', 'Destination', 'Flow', 'Avg_trip_len', 'Volume', 'Duration', 'Oi', 'Dj',
-            'inc<20k', 'inc20-50k', 'inc50-100k', 'inc>100k', 'pct_hbw', 'pct_hbo', 'pct_nhb', 
+            'inc<20k', 'inc20-50k', 'inc50-100k', 'inc>100k', 'pct_hbw', 'pct_hbo', 'pct_nhb',
             'white', 'non-white','Origin_X', 'Origin_Y','Dest_X', 'Dest_Y', 'geometry_y']]
 
 data['distance'] = [dist(data['Origin_X'].iloc[i],data['Dest_X'].iloc[i],data['Origin_Y'].iloc[i],data['Dest_Y'].iloc[i]) for i in range(len(data))]
@@ -218,9 +201,9 @@ trav['inc<20k'] = trav['Income Less than 20K (percent)']
 trav['inc20-50k'] = trav['Income 20K to 35K (percent)'] + trav['Income 35K to 50K (percent)']
 trav['inc50-100k'] = trav['Income 50K to 75K (percent)'] + trav['Income 75K to 100K (percent)']
 trav['inc>100k'] = 1 - trav['inc<20k'] - trav['inc20-50k'] - trav['inc50-100k']
-trav['pct_hbw'] = trav['Purpose HBW (percent)'] 
-trav['pct_hbo'] = trav['Purpose HBO (percent)'] 
-trav['pct_nhb'] = trav['Purpose NHB (percent)'] 
+trav['pct_hbw'] = trav['Purpose HBW (percent)']
+trav['pct_hbo'] = trav['Purpose HBO (percent)']
+trav['pct_nhb'] = trav['Purpose NHB (percent)']
 trav['white'] = trav['White (percent)']
 trav['non-white'] = 1 - trav['White (percent)']
 
@@ -278,9 +261,9 @@ T1 = final_T.reset_index()
 # In[22]:
 
 
-from itertools import product 
+from itertools import product
 ID = list(T1['Origin'])
-        
+
 OD_comb = list(product(ID, repeat = 2))
 OD_comb
 
@@ -288,7 +271,7 @@ OD_comb
 # In[23]:
 
 
-df = pd.DataFrame() 
+df = pd.DataFrame()
 df['Origin'] = [OD_comb[i][0] for i in range(len(OD_comb))]
 df['Destination'] = [OD_comb[i][1] for i in range(len(OD_comb))]
 df['Flow'] = [int(T[i][j]) for i in range(len(T)) for j in range(len(T))]
@@ -314,7 +297,7 @@ df3 = pd.merge(df2, franklin_bg, left_on = 'Destination', right_on = 'id').renam
 df3.columns
 
 data = df3[['Origin', 'Destination', 'Flow', 'Avg_trip_len', 'Volume', 'Duration', 'Oi', 'Dj',
-            'inc<20k', 'inc20-50k', 'inc50-100k', 'inc>100k', 'pct_hbw', 'pct_hbo', 'pct_nhb', 
+            'inc<20k', 'inc20-50k', 'inc50-100k', 'inc>100k', 'pct_hbw', 'pct_hbo', 'pct_nhb',
             'white', 'non-white','Origin_X', 'Origin_Y','Dest_X', 'Dest_Y', 'geometry_y']]
 
 data['distance'] = [dist(data['Origin_X'].iloc[i],data['Dest_X'].iloc[i],data['Origin_Y'].iloc[i],data['Dest_Y'].iloc[i]) for i in range(len(data))]
@@ -478,19 +461,19 @@ df6 = gp.read_file(r'D:\SI model\data\flow_after_cluster3.shp')
 # In[ ]:
 
 
-df11 = df1[df1['Origin'] != df1['Destinatio']] 
+df11 = df1[df1['Origin'] != df1['Destinatio']]
 #df11 = df11[df11['Volume'] >25]
-df44 = df4[df4['Origin'] != df4['Destinatio']] 
+df44 = df4[df4['Origin'] != df4['Destinatio']]
 #df44 = df44[df44['Volume'] >25]
 
-df22 = df2[df2['Origin'] != df2['Destinatio']] 
+df22 = df2[df2['Origin'] != df2['Destinatio']]
 #df22 = df22[df22['Volume'] >25]
-df55 = df5[df5['Origin'] != df5['Destinatio']] 
+df55 = df5[df5['Origin'] != df5['Destinatio']]
 #df55 = df55[df55['Volume'] >25]
 
 df33 = df3[df3['Origin'] != df3['Destinatio']]
 #df33 = df33[df33['Volume'] >25]
-df66 = df6[df6['Origin'] != df6['Destinatio']] 
+df66 = df6[df6['Origin'] != df6['Destinatio']]
 #df66 = df66[df66['Volume'] >25]
 
 
@@ -698,8 +681,8 @@ for i in range(len(origin_ID)):
     try:
         sub = data[data['Origin'] == origin_ID[i]]
         sub = sub[sub['Destinatio'] != origin_ID[i]]
-        glm = smf.glm('Volume ~ Other_Serv + Recreation + Profession + Health_Car + Retail + Accomodati + Finance + Education + Real_Estat + Avg_trip_l', 
-                      data=sub, family=sm.families.Poisson(), 
+        glm = smf.glm('Volume ~ Other_Serv + Recreation + Profession + Health_Car + Retail + Accomodati + Finance + Education + Real_Estat + Avg_trip_l',
+                      data=sub, family=sm.families.Poisson(),
                       var_weights=np.asarray(sub['wij']))
         res_fv = glm.fit()
         origin.append(origin_ID[i])
@@ -832,7 +815,7 @@ bef = pd.merge(bef_coeff, cluster, left_on = "ID", right_on="Origin")
 # In[ ]:
 
 
-val = ["Intercept", "Other_Service", "Recreation", 
+val = ["Intercept", "Other_Service", "Recreation",
        "Professional", "Health_Care", "Retail", "Accomodation",
        "Finance", "Education" ,"Real_Estate", "Avg_trip_length"]
 stat = pd. DataFrame(val)
@@ -857,7 +840,7 @@ for i in range(13,24):
     bef1_mean.append(b)
     bef1_std.append(c)
     bef1_sig.append(d)
-    
+
 
 bef2_mean = []
 bef2_std = []
@@ -869,8 +852,8 @@ for i in range(13,24):
     d = (len(a))*100/len(bef2)
     bef2_mean.append(b)
     bef2_std.append(c)
-    bef2_sig.append(d)  
-    
+    bef2_sig.append(d)
+
 bef3_mean = []
 bef3_std = []
 bef3_sig = []
@@ -881,9 +864,9 @@ for i in range(13,24):
     d = (len(a))*100/len(bef3)
     bef3_mean.append(b)
     bef3_std.append(c)
-    bef3_sig.append(d)  
+    bef3_sig.append(d)
 
-    
+
 af1_mean = []
 af1_std = []
 af1_sig = []
@@ -895,7 +878,7 @@ for i in range(13,24):
     af1_mean.append(b)
     af1_std.append(c)
     af1_sig.append(d)
-    
+
 
 af2_mean = []
 af2_std = []
@@ -907,8 +890,8 @@ for i in range(13,24):
     d = (len(a))*100/len(af2)
     af2_mean.append(b)
     af2_std.append(c)
-    af2_sig.append(d)  
-    
+    af2_sig.append(d)
+
 af3_mean = []
 af3_std = []
 af3_sig = []
@@ -919,7 +902,7 @@ for i in range(13,24):
     d = (len(a))*100/len(af3)
     af3_mean.append(b)
     af3_std.append(c)
-    af3_sig.append(d)  
+    af3_sig.append(d)
 
 
 stat['bef1_mean'] = bef1_mean
@@ -948,7 +931,7 @@ stat['af3_sig'] = af3_sig
 #stat.to_csv(r'D:\SI model\data\local_params_statistics.csv')
 
 
-# # essential travel 
+# # essential travel
 
 # In[ ]:
 
@@ -969,10 +952,10 @@ chg = pd.merge(origin, chg1, left_on = ['Origin'], right_on = ['ID'])
 ess_oth = []
 
 for i in range(len(chg)):
-    if (chg['oth_mag_change'][i] <= 0 or 
-    chg['oth_change'][i] == 'not significant'or 
-    chg['oth_change'][i] == 'significant before' or 
-    chg['Other_Services_exp_x'][i] <= 1 or 
+    if (chg['oth_mag_change'][i] <= 0 or
+    chg['oth_change'][i] == 'not significant'or
+    chg['oth_change'][i] == 'significant before' or
+    chg['Other_Services_exp_x'][i] <= 1 or
     chg['Other_Services_exp_y'][i] <= 1):
         ess_oth.append(0)
     else:
@@ -980,10 +963,10 @@ for i in range(len(chg)):
 
 ess_rec = []
 for i in range(len(chg)):
-    if (chg['recrea_mag_change'][i] <= 0 or 
-    chg['recreation_change'][i] == 'not significant'or 
-    chg['recreation_change'][i] == 'significant before' or 
-    chg['Recreation_exp_x'][i] <= 1 or 
+    if (chg['recrea_mag_change'][i] <= 0 or
+    chg['recreation_change'][i] == 'not significant'or
+    chg['recreation_change'][i] == 'significant before' or
+    chg['Recreation_exp_x'][i] <= 1 or
     chg['Recreation_exp_y'][i] <= 1):
         ess_rec.append(0)
     else:
@@ -991,10 +974,10 @@ for i in range(len(chg)):
 
 ess_prof = []
 for i in range(len(chg)):
-    if (chg['prof_mag_change'][i] <= 0 or 
-    chg['prof_change'][i] == 'not significant'or 
-    chg['prof_change'][i] == 'significant before' or 
-    chg['Professional_exp_x'][i] <= 1 or 
+    if (chg['prof_mag_change'][i] <= 0 or
+    chg['prof_change'][i] == 'not significant'or
+    chg['prof_change'][i] == 'significant before' or
+    chg['Professional_exp_x'][i] <= 1 or
     chg['Professional_exp_y'][i] <= 1):
         ess_prof.append(0)
     else:
@@ -1002,10 +985,10 @@ for i in range(len(chg)):
 
 ess_health = []
 for i in range(len(chg)):
-    if (chg['health_mag_change'][i] <= 0 or 
-    chg['health_change'][i] == 'not significant'or 
-    chg['health_change'][i] == 'significant before' or 
-    chg['Health_Care_exp_x'][i] <= 1 or 
+    if (chg['health_mag_change'][i] <= 0 or
+    chg['health_change'][i] == 'not significant'or
+    chg['health_change'][i] == 'significant before' or
+    chg['Health_Care_exp_x'][i] <= 1 or
     chg['Health_Care_exp_y'][i] <= 1):
         ess_health.append(0)
     else:
@@ -1013,10 +996,10 @@ for i in range(len(chg)):
 
 ess_retail = []
 for i in range(len(chg)):
-    if (chg['retail_mag_change'][i] <= 0 or 
-    chg['retail_change'][i] == 'not significant'or 
-    chg['retail_change'][i] == 'significant before' or 
-    chg['Retail_exp_x'][i] <= 1 or 
+    if (chg['retail_mag_change'][i] <= 0 or
+    chg['retail_change'][i] == 'not significant'or
+    chg['retail_change'][i] == 'significant before' or
+    chg['Retail_exp_x'][i] <= 1 or
     chg['Retail_exp_y'][i] <= 1):
         ess_retail.append(0)
     else:
@@ -1024,54 +1007,54 @@ for i in range(len(chg)):
 
 ess_food = []
 for i in range(len(chg)):
-    if (chg['food_mag_change'][i] <= 0 or 
-    chg['food_change'][i] == 'not significant'or 
-    chg['food_change'][i] == 'significant before' or 
-    chg['Accomodation_and_Food_exp_x'][i] <= 1 or 
+    if (chg['food_mag_change'][i] <= 0 or
+    chg['food_change'][i] == 'not significant'or
+    chg['food_change'][i] == 'significant before' or
+    chg['Accomodation_and_Food_exp_x'][i] <= 1 or
     chg['Accomodation_and_Food_exp_y'][i] <= 1):
         ess_food.append(0)
     else:
         ess_food.append(1)
-        
+
 ess_edu = []
 for i in range(len(chg)):
-    if (chg['edu_mag_change'][i] <= 0 or 
-    chg['edu_change'][i] == 'not significant'or 
-    chg['edu_change'][i] == 'significant before' or 
-    chg['Education_exp_x'][i] <= 1 or 
+    if (chg['edu_mag_change'][i] <= 0 or
+    chg['edu_change'][i] == 'not significant'or
+    chg['edu_change'][i] == 'significant before' or
+    chg['Education_exp_x'][i] <= 1 or
     chg['Education_exp_y'][i] <= 1):
         ess_edu.append(0)
     else:
         ess_edu.append(1)
-        
+
 ess_fin = []
 for i in range(len(chg)):
-    if (chg['fin_mag_change'][i] <= 0 or 
-    chg['fin_change'][i] == 'not significant'or 
-    chg['fin_change'][i] == 'significant before' or 
-    chg['Finance_exp_x'][i] <= 1 or 
+    if (chg['fin_mag_change'][i] <= 0 or
+    chg['fin_change'][i] == 'not significant'or
+    chg['fin_change'][i] == 'significant before' or
+    chg['Finance_exp_x'][i] <= 1 or
     chg['Finance_exp_y'][i] <= 1):
         ess_fin.append(0)
     else:
         ess_fin.append(1)
-        
+
 ess_real = []
 for i in range(len(chg)):
-    if (chg['real_est_mag_change'][i] <= 0 or 
-    chg['real_estate_change'][i] == 'not significant'or 
-    chg['real_estate_change'][i] == 'significant before' or 
-    chg['Real_Estate_exp_x'][i] <= 1 or 
+    if (chg['real_est_mag_change'][i] <= 0 or
+    chg['real_estate_change'][i] == 'not significant'or
+    chg['real_estate_change'][i] == 'significant before' or
+    chg['Real_Estate_exp_x'][i] <= 1 or
     chg['Real_Estate_exp_y'][i] <= 1):
         ess_real.append(0)
     else:
         ess_real.append(1)
-        
+
 ess_len = []
 for i in range(len(chg)):
-    if (chg['trip_len_mag_change'][i] <= 0 or 
-    chg['avg_trip_change'][i] == 'not significant'or 
-    chg['avg_trip_change'][i] == 'significant before' or 
-    chg['Avg_trip_1_exp_x'][i] <= 1 or 
+    if (chg['trip_len_mag_change'][i] <= 0 or
+    chg['avg_trip_change'][i] == 'not significant'or
+    chg['avg_trip_change'][i] == 'significant before' or
+    chg['Avg_trip_1_exp_x'][i] <= 1 or
     chg['Avg_trip_1_exp_y'][i] <= 1):
         ess_len.append(0)
     else:
@@ -1091,4 +1074,3 @@ chg['ess_edu'] = ess_edu
 chg['ess_fin'] = ess_fin
 chg['ess_real'] = ess_real
 chg['ess_len'] = ess_len
-
