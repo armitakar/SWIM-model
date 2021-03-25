@@ -82,15 +82,7 @@ data = pd.merge(OD, trav, left_on=['Origin', 'Destination'], right_on=['Origin',
 
 
 # # Calculate Average Trip Length
-
-# In[6]:
-
-
 OD['cost_flow'] = [(data.iloc[i][2]*data.iloc[i][3]) for i in range(len(data))]
-
-
-# In[7]:
-
 
 final_T= pd.pivot_table(OD, values='Volume', index=['Origin'],
                     columns=['Destination'], aggfunc=np.sum).fillna(1)
@@ -98,10 +90,6 @@ final_TC= pd.pivot_table(OD, values='cost_flow', index=['Origin'],
                     columns=['Destination'], aggfunc=np.sum).fillna(1)
 T = final_T.values
 TC = final_TC.values
-
-
-# In[10]:
-
 
 n = len(T)
 m = len(T[0])
@@ -115,26 +103,15 @@ for i in range(n):
             TC[i][j] = 1
         C[i][j] = (TC[i][j]+TC[j][i]) / (T[i][j]+T[j][i])
 
-
-# In[11]:
-
-
 T1 = final_T.reset_index()
 
 
 # # Create dataset for each OD pair
 
-# In[12]:
-
-
 from itertools import product
 ID = list(T1['Origin'])
 
 OD_comb = list(product(ID, repeat = 2))
-
-
-# In[13]:
-
 
 df = pd.DataFrame()
 df['Origin'] = [OD_comb[i][0] for i in range(len(OD_comb))]
@@ -142,16 +119,8 @@ df['Destination'] = [OD_comb[i][1] for i in range(len(OD_comb))]
 df['Flow'] = [int(T[i][j]) for i in range(len(T)) for j in range(len(T))]
 df['Avg_trip_len'] = [C[i][j] for i in range(len(C)) for j in range(len(C))]
 
-
-# In[14]:
-
-
 # merge with actual dataset
 df1 = pd.merge(df, data, left_on=['Origin', 'Destination'], right_on=['Origin', 'Destination'], how = 'outer')
-
-
-# In[15]:
-
 
 # connect with shapefile
 franklin_bg = gp.read_file(r'D:\SI model\data\Franklin_bg.shp')
@@ -159,7 +128,6 @@ df2 = pd.merge(df1, franklin_bg, left_on = 'Origin', right_on = 'id').rename(col
                                                                                       'Y': 'Origin_Y'})
 df3 = pd.merge(df2, franklin_bg, left_on = 'Destination', right_on = 'id').rename(columns = {'X': 'Dest_X',
                                                                                       'Y': 'Dest_Y'})
-df3.columns
 
 data = df3[['Origin', 'Destination', 'Flow', 'Avg_trip_len', 'Volume', 'Duration', 'Oi', 'Dj',
             'inc<20k', 'inc20-50k', 'inc50-100k', 'inc>100k', 'pct_hbw', 'pct_hbo', 'pct_nhb',
@@ -170,19 +138,11 @@ data.to_csv(r'D:\SI model\data\OD_data_Mar15_April30_2020.csv')
 
 
 # # Read Data (pre-lockdown phase)
-
-# In[16]:
-
-
 OD = pd.read_csv(r'D:\SI model\data\132988_Franklin_county_mar15_apr30_2019\132988_Franklin_county_mar15_apr30_2019_od_all.csv')
 trav = pd.read_csv(r'D:\SI model\data\132988_Franklin_county_mar15_apr30_2019\132988_Franklin_county_mar15_apr30_2019_od_traveler_all.csv')
 
 
 # # Process OD and travelers info
-
-# In[17]:
-
-
 OD = OD[OD['Day Type'] == "0: All Days (M-Su)"]
 OD = OD[OD['Day Part'] == "0: All Day (12am-12am)"]
 OD = OD[['Origin Zone ID','Destination Zone ID','Average Daily O-D Traffic (StL Volume)',
@@ -216,15 +176,7 @@ data = pd.merge(OD, trav, left_on=['Origin', 'Destination'], right_on=['Origin',
 
 
 # # Calculate Average Trip Length
-
-# In[18]:
-
-
 OD['cost_flow'] = [(data.iloc[i][2]*data.iloc[i][3]) for i in range(len(data))]
-
-
-# In[19]:
-
 
 final_T= pd.pivot_table(OD, values='Volume', index=['Origin'],
                     columns=['Destination'], aggfunc=np.sum).fillna(1)
@@ -232,10 +184,6 @@ final_TC= pd.pivot_table(OD, values='cost_flow', index=['Origin'],
                     columns=['Destination'], aggfunc=np.sum).fillna(1)
 T = final_T.values
 TC = final_TC.values
-
-
-# In[20]:
-
 
 n = len(T)
 m = len(T[0])
@@ -249,27 +197,13 @@ for i in range(n):
             TC[i][j] = 0.00000001
         C[i][j] = (TC[i][j]+TC[j][i]) / (T[i][j]+T[j][i])
 
-
-# In[21]:
-
-
 T1 = final_T.reset_index()
 
 
 # # create dataset for each OD pair
-
-# In[22]:
-
-
 from itertools import product
 ID = list(T1['Origin'])
-
 OD_comb = list(product(ID, repeat = 2))
-OD_comb
-
-
-# In[23]:
-
 
 df = pd.DataFrame()
 df['Origin'] = [OD_comb[i][0] for i in range(len(OD_comb))]
@@ -277,16 +211,8 @@ df['Destination'] = [OD_comb[i][1] for i in range(len(OD_comb))]
 df['Flow'] = [int(T[i][j]) for i in range(len(T)) for j in range(len(T))]
 df['Avg_trip_len'] = [C[i][j] for i in range(len(C)) for j in range(len(C))]
 
-
-# In[24]:
-
-
 # merge with actual dataset
 df1 = pd.merge(df, data, left_on=['Origin', 'Destination'], right_on=['Origin', 'Destination'], how = 'inner')
-
-
-# In[25]:
-
 
 # connect with shapefile
 franklin_bg = gp.read_file(r'D:\SI model\data\Franklin_bg.shp')
@@ -294,7 +220,7 @@ df2 = pd.merge(df1, franklin_bg, left_on = 'Origin', right_on = 'id').rename(col
                                                                                       'Y': 'Origin_Y'})
 df3 = pd.merge(df2, franklin_bg, left_on = 'Destination', right_on = 'id').rename(columns = {'X': 'Dest_X',
                                                                                       'Y': 'Dest_Y'})
-df3.columns
+
 
 data = df3[['Origin', 'Destination', 'Flow', 'Avg_trip_len', 'Volume', 'Duration', 'Oi', 'Dj',
             'inc<20k', 'inc20-50k', 'inc50-100k', 'inc>100k', 'pct_hbw', 'pct_hbo', 'pct_nhb',
@@ -305,18 +231,10 @@ data.to_csv(r'D:\SI model\data\OD_data_Mar15_April30_2019.csv')
 
 
 # # Summary Stats
-
-# In[26]:
-
-
 before = pd.read_csv(r'D:\SI model\data\OD_data_Mar15_April30_2019.csv')
 after = pd.read_csv(r'D:\SI model\data\OD_data_Mar15_April30_2020.csv')
 before = before[before['Volume'] != 0]
 after = after[after['Volume'] != 0]
-
-
-# In[27]:
-
 
 df = before.groupby(['Origin']).agg({'Oi':'mean',
                                     'inc<20k': 'mean',
@@ -329,10 +247,6 @@ df = before.groupby(['Origin']).agg({'Oi':'mean',
                                     'white': 'mean',
                                     'non-white': 'mean'}).reset_index()
 
-
-# In[28]:
-
-
 df1 = after.groupby(['Origin']).agg({'Oi':'mean',
                                     'inc<20k': 'mean',
                                     'inc20-50k': 'mean',
@@ -344,32 +258,15 @@ df1 = after.groupby(['Origin']).agg({'Oi':'mean',
                                     'white': 'mean',
                                     'non-white': 'mean'}).reset_index()
 
-
-# In[29]:
-
-
 df.to_csv(r'D:\SI model\data\origin_traveller_before.csv')
 df1.to_csv(r'D:\SI model\data\origin_traveller_after.csv')
-
-
-# In[30]:
-
 
 df_final = pd.merge(df,df1,on='Origin')
 df_final.to_csv(r'D:\SI model\data\origin_traveller_all.csv')
 
-
-# # Cluster Statistics
-
-# In[ ]:
-
-
 ### performed cluster analysis in R
+# # Cluster Statistics
 all_clus = pd.read_csv(r'D:\SI model\data\cluster_all.csv')
-
-
-# In[ ]:
-
 
 all_clus1 = all_clus[all_clus['cluster'] ==1]
 all_clus2 = all_clus[all_clus['cluster'] ==2]
@@ -411,27 +308,13 @@ cluster_all1['mean_cluster_3'] = all_clus3y.mean()
 cluster_all1['SD_cluster_3'] = all_clus3y.std()
 
 cluster = pd.concat([cluster_all, cluster_all1])
-
 cluster.to_csv(r'D:\SI model\data\cluster_statistics_all.csv')
 
 
 # # joining flow value to shapefiles
-
-# In[ ]:
-
-
 flow = gp.read_file(r'D:\SI model\data\flow.shp')
-
-
-# In[ ]:
-
-
 flow_before =pd.merge(flow, before, left_on=['Origin', 'Destinatio'], right_on=['Origin', 'Destination'])
 flow_after =pd.merge(flow, after, left_on=['Origin', 'Destinatio'], right_on=['Origin', 'Destination'])
-
-
-# In[ ]:
-
 
 #gdf1 = gp.GeoDataFrame(flow_before, geometry = 'geometry')
 #gdf1.to_file(r'D:\SI model\data\flow_before.shp', Driver = 'Esri Shapefile')
@@ -439,46 +322,22 @@ flow_after =pd.merge(flow, after, left_on=['Origin', 'Destinatio'], right_on=['O
 #gdf2 = gp.GeoDataFrame(flow_after, geometry = 'geometry')
 #gdf2.to_file(r'D:\SI model\data\flow_after.shp', Driver = 'Esri Shapefile')
 
-
 # # total destination values
-
-# In[ ]:
-
-
 df1 = gp.read_file(r'D:\SI model\data\flow_before_cluster1.shp')
 df2 = gp.read_file(r'D:\SI model\data\flow_before_cluster2.shp')
 df3 = gp.read_file(r'D:\SI model\data\flow_before_cluster3.shp')
-
-
-# In[ ]:
-
-
 df4 = gp.read_file(r'D:\SI model\data\flow_after_cluster1.shp')
 df5 = gp.read_file(r'D:\SI model\data\flow_after_cluster2.shp')
 df6 = gp.read_file(r'D:\SI model\data\flow_after_cluster3.shp')
 
-
-# In[ ]:
-
-
 df11 = df1[df1['Origin'] != df1['Destinatio']]
-#df11 = df11[df11['Volume'] >25]
 df44 = df4[df4['Origin'] != df4['Destinatio']]
-#df44 = df44[df44['Volume'] >25]
 
 df22 = df2[df2['Origin'] != df2['Destinatio']]
-#df22 = df22[df22['Volume'] >25]
 df55 = df5[df5['Origin'] != df5['Destinatio']]
-#df55 = df55[df55['Volume'] >25]
 
 df33 = df3[df3['Origin'] != df3['Destinatio']]
-#df33 = df33[df33['Volume'] >25]
 df66 = df6[df6['Origin'] != df6['Destinatio']]
-#df66 = df66[df66['Volume'] >25]
-
-
-# In[ ]:
-
 
 df11 = df11.groupby('Destinatio').agg({'Other_Serv':'mean',
                                      'Recreation':'mean',
@@ -595,33 +454,18 @@ df66 = df66.groupby('Destinatio').agg({'Other_Serv':'mean',
                                      'Agricultur':'mean',
                                      'Management':'mean'}).reset_index()
 
-
-# In[ ]:
-
-
 agg = pd.DataFrame(df11.sum()).rename(columns = {0:'clus1_Before'})
 agg['clus1_After'] = df44.sum()
-
 agg['clus2_Before'] = df22.sum()
 agg['clus2_After'] = df55.sum()
-
 agg['clus3_Before'] = df33.sum()
 agg['clus3_After'] = df66.sum()
-
 agg.to_csv(r'D:\SI model\data\cluster_facilities_aggregation.csv')
 
 
 # # Global Model
-
-# In[ ]:
-
-
 before = gp.read_file(r'D:\SI model\data\flow_before_cluster.shp')
 after = gp.read_file(r'D:\SI model\data\flow_after_cluster.shp')
-
-
-# In[ ]:
-
 
 before = before[before['Origin'] != before['Destinatio']]
 after = after[after['Origin'] != after['Destinatio']]
@@ -631,10 +475,8 @@ glm1 = smf.glm('Volume ~ Other_Serv + Recreation + Profession + Health_Car + Ret
 glm2 = smf.glm('Volume ~ Other_Serv + Recreation + Profession + Health_Car + Retail + Accomodati + Finance + Education + Real_Estat + Avg_trip_l',
                   data=after, family=sm.families.Poisson())
 
-
 res_fv1 = glm1.fit()
 res_fv2 = glm2.fit()
-
 
 a = pd.DataFrame(res_fv1.params).rename(columns = {0:'bef_coeff'})
 a['bef_pval']= res_fv1.pvalues
@@ -654,17 +496,9 @@ SRMSE(after.Volume, res_fv2.fittedvalues, len(after))
 
 
 # # local model
-
-# In[ ]:
-
-
 data = after[after['cluster']==1]
 
-
-# In[ ]:
-
-
-## estimate local values
+## estimate local parameters
 origin_ID = data['Origin'].unique()
 result = []
 tvalues = []
@@ -674,7 +508,6 @@ pseudoR1 = []
 aic = []
 origin = []
 Error = []
-
 
 data['wij'] = [sq_cauchy(data['distance'].iloc[i], 10000) for i in range(len(data))]
 for i in range(len(origin_ID)):
@@ -696,10 +529,6 @@ for i in range(len(origin_ID)):
     except:
         pass
 
-
-# In[ ]:
-
-
 ## store results in dataframe
 local_gwr_p = pd.DataFrame()
 local_gwr_p['ID'] = list(data['Origin'].unique())
@@ -715,7 +544,6 @@ local_gwr_p['Education'] = [result[i][8] for i in range(len(result))]
 local_gwr_p['Real Estate'] = [result[i][9] for i in range(len(result))]
 local_gwr_p['Avg_trip_1'] = [result[i][10] for i in range(len(result))]
 
-
 local_gwr_p['intercept_exp'] = [math.exp(result[i][0]) for i in range(len(result))]
 local_gwr_p['Other_Services_exp'] = [math.exp(result[i][1]) for i in range(len(result))]
 local_gwr_p['Recreation_exp'] = [math.exp(result[i][2]) for i in range(len(result))]
@@ -727,7 +555,6 @@ local_gwr_p['Finance_exp'] = [math.exp(result[i][7]) for i in range(len(result))
 local_gwr_p['Education_exp'] = [math.exp(result[i][8]) for i in range(len(result))]
 local_gwr_p['Real_Estate_exp'] = [math.exp(result[i][9]) for i in range(len(result))]
 local_gwr_p['Avg_trip_1_exp'] = [math.exp(result[i][10]) for i in range(len(result))]
-
 
 local_gwr_p['pval_int'] = [pvalues[i][0] for i in range(len(pvalues))]
 local_gwr_p['pval_services'] = [pvalues[i][1] for i in range(len(pvalues))]
@@ -741,7 +568,6 @@ local_gwr_p['pval_edu']= [pvalues[i][8] for i in range(len(pvalues))]
 local_gwr_p['pval_real estate'] = [pvalues[i][9] for i in range(len(pvalues))]
 local_gwr_p['pval_trip_len']= [pvalues[i][10] for i in range(len(pvalues))]
 
-
 local_gwr_p['pval_int_sig'] = ['***' if (pvalues[i][0])<0.05 else '-' for i in range(len(pvalues))]
 local_gwr_p['pval_services_sig'] = ['***' if (pvalues[i][1])<0.05 else '-' for i in range(len(pvalues))]
 local_gwr_p['pval_recreation_sig'] = ['***' if (pvalues[i][2])<0.05 else '-' for i in range(len(pvalues))]
@@ -753,7 +579,6 @@ local_gwr_p['pval_finance_sig']= ['***' if (pvalues[i][7])<0.05 else '-' for i i
 local_gwr_p['pval_edu_sig']= ['***' if (pvalues[i][8])<0.05 else '-' for i in range(len(pvalues))]
 local_gwr_p['pval_real_estate_sig'] = ['***' if (pvalues[i][9])<0.05 else '-' for i in range(len(pvalues))]
 local_gwr_p['pval_trip_len_sig']= ['***' if (pvalues[i][10])<0.05 else '-' for i in range(len(pvalues))]
-
 
 local_gwr_p['tval_int'] = [tvalues[i][0] for i in range(len(tvalues))]
 local_gwr_p['tval_services'] = [tvalues[i][1] for i in range(len(tvalues))]
@@ -767,28 +592,18 @@ local_gwr_p['tval_edu']= [tvalues[i][8] for i in range(len(tvalues))]
 local_gwr_p['tval_real_estate'] = [tvalues[i][9] for i in range(len(tvalues))]
 local_gwr_p['tval_trip_len']= [tvalues[i][10] for i in range(len(tvalues))]
 
-
 local_gwr_p['aic'] = aic
 local_gwr_p['deviance'] = deviance
 local_gwr_p['pseudoR1'] = pseudoR1
 
 
 # # Estimates of local params
-
-# In[ ]:
-
-
 bef1 = pd.read_csv(r'D:\SI model\data\cluster1_before_local_params.csv')
 bef2 = pd.read_csv(r'D:\SI model\data\cluster2_before_local_params.csv')
 bef3 = pd.read_csv(r'D:\SI model\data\cluster3_before_local_params.csv')
-
 af1 = pd.read_csv(r'D:\SI model\data\cluster1_after_local_params.csv')
 af2 = pd.read_csv(r'D:\SI model\data\cluster2_after_local_params.csv')
 af3 = pd.read_csv(r'D:\SI model\data\cluster3_after_local_params.csv')
-
-
-# In[ ]:
-
 
 bef = pd.concat([bef1, bef2, bef3], ignore_index = True)
 bef.to_csv(r'D:\SI model\data\before_local_params.csv')
@@ -796,38 +611,21 @@ bef.to_csv(r'D:\SI model\data\before_local_params.csv')
 af = pd.concat([af1, af2, af3], ignore_index = True)
 af.to_csv(r'D:\SI model\data\after_local_params.csv')
 
-
-# In[ ]:
-
-
 cluster = before.groupby(['Origin']).agg({'cluster':'mean'}).reset_index()
 af_coeff = pd.read_csv(r'D:\SI model\data\after_local_params.csv')
 bef_coeff = pd.read_csv(r'D:\SI model\data\before_local_params.csv')
 
-
-# In[ ]:
-
-
 af = pd.merge(af_coeff, cluster, left_on = "ID", right_on="Origin")
 bef = pd.merge(bef_coeff, cluster, left_on = "ID", right_on="Origin")
-
-
-# In[ ]:
-
 
 val = ["Intercept", "Other_Service", "Recreation",
        "Professional", "Health_Care", "Retail", "Accomodation",
        "Finance", "Education" ,"Real_Estate", "Avg_trip_length"]
 stat = pd. DataFrame(val)
-stat
 
 bef1.iloc[:, 24]
 bef1.iloc[:, 13]
 bef1.iloc[:, 24]
-
-
-# In[ ]:
-
 
 bef1_mean = []
 bef1_std = []
@@ -840,7 +638,6 @@ for i in range(13,24):
     bef1_mean.append(b)
     bef1_std.append(c)
     bef1_sig.append(d)
-
 
 bef2_mean = []
 bef2_std = []
@@ -878,7 +675,6 @@ for i in range(13,24):
     af1_mean.append(b)
     af1_std.append(c)
     af1_sig.append(d)
-
 
 af2_mean = []
 af2_std = []
@@ -933,24 +729,11 @@ stat['af3_sig'] = af3_sig
 
 # # essential travel
 
-# In[ ]:
-
-
 chg1 = pd.read_csv(r'D:\SI model\data\change_local_params.csv')
 origin = gp.read_file(r'D:\SI model\data\centroid_cluster.shp')
-
-
-# In[ ]:
-
-
 chg = pd.merge(origin, chg1, left_on = ['Origin'], right_on = ['ID'])
 
-
-# In[ ]:
-
-
 ess_oth = []
-
 for i in range(len(chg)):
     if (chg['oth_mag_change'][i] <= 0 or
     chg['oth_change'][i] == 'not significant'or
@@ -1059,10 +842,6 @@ for i in range(len(chg)):
         ess_len.append(0)
     else:
         ess_len.append(1)
-
-
-# In[ ]:
-
 
 chg['ess_oth'] = ess_oth
 chg['ess_rec'] = ess_rec
